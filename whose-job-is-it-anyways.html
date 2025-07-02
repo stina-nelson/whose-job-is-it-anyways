@@ -306,10 +306,10 @@
     <div class="container">
         <h1>🎯 Whose Job Is It Anyways</h1>
         
-        <div id="setupArea" class="setup-area">
+        <div id="setupArea" class="setup-area hidden">
             <h2>Set up your team and tasks</h2>
-            <p>Add team members and their assigned tasks to get started!</p>
-            <button class="setup-btn" onclick="showSetupForm()">Configure Whose Job Is It Anyways</button>
+            <p>Only the owner can set up the team and tasks.</p>
+            <button class="setup-btn" onclick="loadSampleData()">Start Game</button>
         </div>
 
         <div id="gameArea" class="game-area hidden">
@@ -369,26 +369,7 @@
         </div>
 
         <!-- Setup Modal -->
-        <div id="setupModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
-            <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;">
-                <h2>Configure Your Team</h2>
-                <div id="teamSetup">
-                    <div class="team-member-setup" style="margin: 20px 0; padding: 15px; border: 1px solid #e9ecef; border-radius: 10px; background-color: #f8f9fa;">
-                        <div style="margin-bottom: 10px;">
-                            <input type="text" placeholder="Team member name" class="member-name" style="margin: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-weight: bold;">
-                            <button onclick="removeMember(this)" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; float: right;">Remove</button>
-                        </div>
-                        <div style="margin-bottom: 10px;">
-                            <label style="display: block; margin-bottom: 5px; color: #495057; font-weight: 500;">Tasks (one per line):</label>
-                            <textarea class="member-tasks" rows="8" placeholder="Enter tasks, one per line..." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit;"></textarea>
-                        </div>
-                    </div>
-                </div>
-                <button onclick="addMember()" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin: 10px 0;">Add Member</button>
-                <button onclick="saveSetup()" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin: 10px 10px;">Save & Start</button>
-                <button onclick="loadSampleData()" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin: 10px 0;">Load Sample Data</button>
-            </div>
-        </div>
+        <div id="setupModal" class="hidden"></div>
     </div>
 
     <script>
@@ -802,8 +783,9 @@
 
         // Initialize with sample data button
         document.addEventListener('DOMContentLoaded', function() {
-            // Add initial member row
-            addMember();
+            // Always load sample data and start the game for all users
+            loadSampleData();
+            saveSetup();
         });
     </script>
 </body>
