@@ -1,0 +1,127 @@
+// ... existing code ...
+    <div class="container">
+        <h1>🎯 Whose Job Is It Anyways</h1>
+        <div id="gameArea" class="game-area">
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number" id="score">0</div>
+                    <div class="stat-label">Correct</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="attempts">0</div>
+                    <div class="stat-label">Attempts</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="streak">0</div>
+                    <div class="stat-label">Streak</div>
+                </div>
+            </div>
+            <div class="task-display" id="currentTask">
+                Click "Start Game" to begin!
+            </div>
+            <div id="feedback" class="feedback hidden"></div>
+            <div class="team-members" id="teamMembers"></div>
+            <button class="reset-btn" onclick="resetGame()">Reset Game</button>
+            <button class="show-leaderboard-btn" onclick="toggleLeaderboard()">🏆 Show Leaderboards</button>
+        </div>
+        <div id="leaderboardSection" class="leaderboard-section hidden">
+            <h2 class="leaderboard-title">🏆 Whose Job Is It Anyways Leaderboards</h2>
+            <div class="leaderboard-grid">
+                <div class="board">
+                    <h3 class="board-title positive">🥇 Champions</h3>
+                    <div id="championsList">
+                        <div class="no-data">No champions yet. Start playing Whose Job Is It Anyways to see who knows the team best!</div>
+                    </div>
+                </div>
+                <div class="board">
+                    <h3 class="board-title negative">😅 Needs Improvement</h3>
+                    <div id="shameList">
+                        <div class="no-data">No shame board entries yet. Keep playing Whose Job Is It Anyways!</div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="show-leaderboard-btn" onclick="toggleLeaderboard()">Hide Leaderboards</button>
+                <button class="reset-btn" onclick="resetLeaderboards()">Reset All Scores</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Owner-defined team and tasks
+        window.sampleData = [
+            {
+                name: 'Laura',
+                avatar: 'avatars/laura.png',
+                tasks: [
+                    'office supplies',
+                    'snacks and drinks',
+                    'office vendor management',
+                    'internet troubleshooting and basic IT',
+                    'Alta Open management',
+                    'property manager liaison'
+                ]
+            },
+            {
+                name: 'Deena',
+                avatar: 'avatars/deena.png',
+                tasks: [
+                    'visas',
+                    'benefits',
+                    'leave',
+                    'HR business partnership',
+                    'employee disputes'
+                ]
+            },
+            {
+                name: 'Christina',
+                avatar: 'avatars/christina.png',
+                tasks: [
+                    'onboarding',
+                    'company events',
+                    'swag store',
+                    'company culture and engagement'
+                ]
+            }
+        ];
+        let teamData = [];
+        let allTasks = [];
+        let currentTask = '';
+        let currentOwner = '';
+        let score = 0;
+        let attempts = 0;
+        let streak = 0;
+        let usedTasks = [];
+        let playerScores = JSON.parse(localStorage.getItem('taskGameScores')) || {};
+        let currentPlayer = '';
+        function loadSampleData() {
+            const sampleData = window.sampleData;
+            teamData = [];
+            sampleData.forEach(member => {
+                teamData.push({
+                    name: member.name,
+                    tasks: member.tasks,
+                    avatar: member.avatar
+                });
+            });
+            // Flatten all tasks for the game
+            allTasks = [];
+            teamData.forEach(member => {
+                member.tasks.forEach(task => {
+                    allTasks.push({
+                        task: task,
+                        owner: member.name
+                    });
+                });
+            });
+            // Prompt for player name
+            if (!promptPlayerName()) {
+                currentPlayer = 'Anonymous Player';
+            }
+            startNewRound();
+        }
+        // ... rest of the JS code remains unchanged ...
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSampleData();
+        });
+    </script>
+// ... existing code ...
