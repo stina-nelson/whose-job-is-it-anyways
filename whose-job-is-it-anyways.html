@@ -408,6 +408,8 @@
             });
         }
         function checkGuess(guessedName) {
+            console.log("checkGuess called with:", guessedName);
+            alert("checkGuess called with: " + guessedName);
             attempts++;
             document.getElementById('attempts').textContent = attempts;
             const buttons = document.querySelectorAll('.member-btn');
