@@ -132,7 +132,52 @@
         }
         .reset-btn:hover { background: #545b62; }
         .hidden { display: none; }
-        .leaderboard-section {
+
+        /* Custom popup modal styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .popup-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: popupAppear 0.3s ease-out;
+        }
+        @keyframes popupAppear {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .popup-message {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .popup-button {
+            background: #ff7f50;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .popup-button:hover {
+            background: #ff6347;
+        }        .leaderboard-section {
             margin: 30px 0;
             padding: 20px;
             background: #f8f9fa;
@@ -299,7 +344,19 @@
         let usedTasks = [];
         let playerScores = JSON.parse(localStorage.getItem('taskGameScores')) || {};
         let currentPlayer = '';
-        function loadSampleData() {
+
+        // Custom popup function to replace browser alerts
+        function showCustomPopup(message) {
+            const overlay = document.createElement(x27divx27);
+            overlay.className = x27popup-overlayx27;
+            overlay.innerHTML = `
+                <div class="popup-content">
+                    <div class="popup-message">${message}</div>
+                    <button class="popup-button" onclick="this.parentElement.parentElement.remove()">OK</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }        function loadSampleData() {
             const sampleData = window.sampleData;
             teamData = [];
             sampleData.forEach(member => {
@@ -369,7 +426,7 @@
                 setTimeout(() => {
                     if (usedTasks.length >= allTasks.length) {
                         savePlayerScore();
-                        alert(`🎉 Game completed! Final score: ${score} correct out of ${attempts} attempts. Your score has been saved to the leaderboard!`);
+                        showCustomPopup(`🎉 Game completed! Final score: ${score} correct out of ${attempts} attempts. Your score has been saved to the leaderboard!`);
                         resetGame();
                     } else {
                         startNewRound();
@@ -386,13 +443,13 @@
                 feedback.classList.remove('hidden');
                 // Special popups for each member
                 if (guessedName === 'Laura' && currentOwner !== 'Laura') {
-                    setTimeout(() => { alert("Did you just guess Laura because she's closest to you right now?"); }, 100);
+                    setTimeout(() => { showCustomPopup("Did you just guess Laura because she's closest to you right now?"); }, 100);
                 }
                 if (guessedName === 'Deena' && currentOwner !== 'Deena') {
-                    setTimeout(() => { alert("how am I supposed to live, laugh, love in these conditions?"); }, 100);
+                    setTimeout(() => { showCustomPopup("how am I supposed to live, laugh, love in these conditions?"); }, 100);
                 }
                 if (guessedName === 'Christina' && currentOwner !== 'Christina') {
-                    setTimeout(() => { alert("nope!"); }, 100);
+                    setTimeout(() => { showCustomPopup("nope!"); }, 100);
                 }
                 setTimeout(() => {
                     buttons.forEach(btn => {
