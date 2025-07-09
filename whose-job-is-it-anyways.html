@@ -408,8 +408,6 @@
             });
         }
         function checkGuess(guessedName) {
-            console.log("checkGuess called with:", guessedName);
-            alert("checkGuess called with: " + guessedName);
             attempts++;
             document.getElementById('attempts').textContent = attempts;
             const buttons = document.querySelectorAll('.member-btn');
@@ -445,7 +443,7 @@
                 feedback.classList.remove('hidden');
                 // Special popups for each member
                 if (guessedName === 'Laura' && currentOwner !== 'Laura') {
-                    setTimeout(() => { alert("Did you just guess Laura because she's closest to you right now?"); showCustomPopup("Did you just guess Laura because she's closest to you right now?"); }, 100);
+                    setTimeout(() => { showCustomPopup("Did you just guess Laura because she's closest to you right now?"); }, 100);
                 }
                 if (guessedName === 'Deena' && currentOwner !== 'Deena') {
                     setTimeout(() => { showCustomPopup("how am I supposed to live, laugh, love in these conditions?"); }, 100);
@@ -573,8 +571,6 @@
         }
         // On page load, start the game with owner-defined data
         document.addEventListener('DOMContentLoaded', function() {
-            console.log("DOM loaded, starting game");
-            alert("Game is loading!");
             loadSampleData();
         });
     </script>
