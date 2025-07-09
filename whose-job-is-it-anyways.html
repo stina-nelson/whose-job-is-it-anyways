@@ -347,8 +347,8 @@
 
         // Custom popup function to replace browser alerts
         function showCustomPopup(message) {
-            const overlay = document.createElement(x27divx27);
-            overlay.className = x27popup-overlayx27;
+            const overlay = document.createElement('div');
+            overlay.className = 'popup-overlay';
             overlay.innerHTML = `
                 <div class="popup-content">
                     <div class="popup-message">${message}</div>
