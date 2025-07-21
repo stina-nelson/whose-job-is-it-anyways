@@ -564,14 +564,17 @@
             }
         }
         function promptPlayerName() {
-            const playerName = prompt('Enter your name for the leaderboard:');
-            if (playerName && playerName.trim()) {
-                currentPlayer = playerName.trim();
-                return true;
-            }
-            return false;
-        }
-        // Helper to get avatar by name
+            return new Promise((resolve) => {
+                showCustomPrompt('Enter your name for the leaderboard:', (playerName) => {
+                    if (playerName && playerName.trim()) {
+                        currentPlayer = playerName.trim();
+                        resolve(true);
+                    } else {
+                        resolve(false);
+                    }
+                });
+            });
+        }        // Helper to get avatar by name
         function getAvatarByName(name) {
             const member = teamData.find(m => m.name === name);
             return member && member.avatar ? member.avatar : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name);
