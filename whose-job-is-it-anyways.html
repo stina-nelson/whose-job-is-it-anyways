@@ -272,6 +272,7 @@
             </div>
             <div id="feedback" class="feedback hidden"></div>
             <div class="team-members" id="teamMembers"></div>
+            <button class="reset-btn" onclick="setPlayerName()">Add Your Name to the Leaderboard</button>
             <button class="reset-btn" onclick="resetGame()">Reset Game</button>
             <button class="show-leaderboard-btn" onclick="toggleLeaderboard()">🏆 Show Leaderboards</button>
         </div>
@@ -367,7 +368,6 @@
         
         // Custom input popup to replace browser prompt
         function showCustomPrompt(message, callback) {
-            console.log("showCustomPrompt function started with message:", message);
             const overlay = document.createElement('div');
             overlay.className = 'popup-overlay';
             overlay.innerHTML = `
@@ -381,7 +381,6 @@
                 </div>
             `;
             document.body.appendChild(overlay);
-            console.log("Popup overlay added to document");
             
             // Focus on input
             setTimeout(() => {
@@ -405,7 +404,6 @@
                 overlay.remove();
                 callback(null);
             };
-        }            console.log("Popup overlay added to document");        }        function loadSampleData() {
             const sampleData = window.sampleData;
             teamData = [];
             sampleData.forEach(member => {
@@ -425,37 +423,9 @@
                     });
                 });
             });
-            // Prompt for player name
-            if (!promptPlayerName()) {
-                currentPlayer = 'Anonymous Player';
-            }
-            startNewRound();
-        }
-        function startNewRound() {
-            if (usedTasks.length >= allTasks.length) usedTasks = [];
-            let availableTasks = allTasks.filter(taskObj => !usedTasks.includes(taskObj.task));
-            if (availableTasks.length === 0) {
-                availableTasks = allTasks;
-                usedTasks = [];
-            }
-            const randomTaskObj = availableTasks[Math.floor(Math.random() * availableTasks.length)];
-            currentTask = randomTaskObj.task;
-            currentOwner = randomTaskObj.owner;
-            usedTasks.push(currentTask);
-            document.getElementById('currentTask').textContent = `Who owns: "${currentTask}"?`;
-            document.getElementById('feedback').classList.add('hidden');
-            const teamMembersDiv = document.getElementById('teamMembers');
-            teamMembersDiv.innerHTML = '';
-            const uniqueMembers = [...new Set(teamData.map(member => member.name))];
-            const shuffledMembers = uniqueMembers.sort(() => Math.random() - 0.5);
-            shuffledMembers.forEach(memberName => {
-                const button = document.createElement('button');
-                button.className = 'member-btn';
-                button.innerHTML = `<img src=\"${getAvatarByName(memberName)}\" alt=\"${memberName}\" style=\"width:32px;height:32px;border-radius:50%;vertical-align:middle;margin-right:10px;object-fit:cover;\">${memberName}`;
-                button.onclick = () => checkGuess(memberName);
-                teamMembersDiv.appendChild(button);
-            });
-        }
+            // Set default player and start game
+            currentPlayer = 'Anonymous Player';
+            startNewRound();        }
         function checkGuess(guessedName) {
             attempts++;
             document.getElementById('attempts').textContent = attempts;
@@ -605,10 +575,17 @@
                 updateLeaderboards();
             }
         }
-        function promptPlayerName() {
-            console.log("promptPlayerName called");            return new Promise((resolve) => {
-                console.log("About to call showCustomPrompt");                showCustomPrompt('Enter your name for the leaderboard:', (playerName) => {
-                console.log("showCustomPrompt function exists:", typeof showCustomPrompt);                    if (playerName && playerName.trim()) {
+        function setPlayerName() {
+            showCustomPrompt('Enter your name for the leaderboard:', (playerName) => {
+                if (playerName && playerName.trim()) {
+                    currentPlayer = playerName.trim();
+                    showCustomPopup('Name updated to: '+currentPlayer);
+                } else {
+                    showCustomPopup('Name not changed.');
+                }
+            });
+        }
+                function promptPlayerName() {
                         currentPlayer = playerName.trim();
                         resolve(true);
                     } else {
