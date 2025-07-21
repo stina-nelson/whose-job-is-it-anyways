@@ -585,19 +585,6 @@
                 }
             });
         }
-                function promptPlayerName() {
-                        currentPlayer = playerName.trim();
-                        resolve(true);
-                    } else {
-                        resolve(false);
-                    }
-                });
-            });
-        }        // Helper to get avatar by name
-        function getAvatarByName(name) {
-            const member = teamData.find(m => m.name === name);
-            return member && member.avatar ? member.avatar : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name);
-        }
         // On page load, start the game with owner-defined data
         document.addEventListener('DOMContentLoaded', function() {
             loadSampleData();
