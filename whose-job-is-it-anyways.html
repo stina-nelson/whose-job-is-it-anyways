@@ -566,7 +566,7 @@
         function promptPlayerName() {
             console.log("promptPlayerName called");            return new Promise((resolve) => {
                 console.log("About to call showCustomPrompt");                showCustomPrompt('Enter your name for the leaderboard:', (playerName) => {
-                    if (playerName && playerName.trim()) {
+                console.log("showCustomPrompt function exists:", typeof showCustomPrompt);                    if (playerName && playerName.trim()) {
                         currentPlayer = playerName.trim();
                         resolve(true);
                     } else {
