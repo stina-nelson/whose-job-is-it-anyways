@@ -363,7 +363,49 @@
                 </div>
             `;
             document.body.appendChild(overlay);
-            console.log("Popup overlay added to document");        }        function loadSampleData() {
+        }
+        
+        // Custom input popup to replace browser prompt
+        function showCustomPrompt(message, callback) {
+            console.log("showCustomPrompt function started with message:", message);
+            const overlay = document.createElement('div');
+            overlay.className = 'popup-overlay';
+            overlay.innerHTML = `
+                <div class="popup-content">
+                    <div class="popup-message">${message}</div>
+                    <input type="text" id="promptInput" style="width: 100%; padding: 10px; margin: 10px 0; border: 2px solid #ffb347; border-radius: 5px; font-size: 1em;" placeholder="Enter your name">
+                    <div style="margin-top: 15px;">
+                        <button class="popup-button" onclick="submitPrompt()">OK</button>
+                        <button class="popup-button" style="background: #6c757d; margin-left: 10px;" onclick="cancelPrompt()">Cancel</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            console.log("Popup overlay added to document");
+            
+            // Focus on input
+            setTimeout(() => {
+                document.getElementById('promptInput').focus();
+            }, 100);
+            
+            // Handle Enter key
+            document.getElementById('promptInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    submitPrompt();
+                }
+            });
+            
+            window.submitPrompt = function() {
+                const input = document.getElementById('promptInput').value;
+                overlay.remove();
+                callback(input);
+            };
+            
+            window.cancelPrompt = function() {
+                overlay.remove();
+                callback(null);
+            };
+        }            console.log("Popup overlay added to document");        }        function loadSampleData() {
             const sampleData = window.sampleData;
             teamData = [];
             sampleData.forEach(member => {
