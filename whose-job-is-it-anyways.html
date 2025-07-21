@@ -425,7 +425,7 @@
             });
             // Set default player and start game
             currentPlayer = 'Anonymous Player';
-            startNewRound();        }
+            console.log("About to call startNewRound");            startNewRound();        }
         function checkGuess(guessedName) {
             attempts++;
             document.getElementById('attempts').textContent = attempts;
