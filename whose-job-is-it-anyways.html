@@ -1,29 +1,594 @@
 <!DOCTYPE html>
-<html>
-<head><title>Whose Job Is It Anyways</title></head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whose Job Is It Anyways</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #ffe259 0%, #ffa751 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            color: #ff7f50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        .game-area { margin: 30px 0; }
+        .task-display {
+            background: #fff7c0;
+            border: 2px solid #ffb347;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            font-size: 1.2em;
+            color: #495057;
+            font-weight: 500;
+        }
+        .team-members {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+        .member-btn {
+            background: #fff7c0;
+            color: #ff7f50;
+            border: 2px solid #ffb347;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .member-btn img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid #ffb347;
+            background: #fff;
+        }
+        .member-btn:hover {
+            background: #ffe259;
+            color: #ffb347;
+            transform: scale(1.07) rotate(-2deg);
+            box-shadow: 0 8px 24px rgba(255, 200, 80, 0.22);
+        }
+        .member-btn.correct {
+            background: #b6fcd5;
+            border-color: #28a745;
+            color: #28a745;
+        }
+        .member-btn.incorrect {
+            background: #ffd6d6;
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+        .feedback {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 1.1em;
+        }
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 25px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        .stat { text-align: center; }
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #007bff;
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        .reset-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 20px;
+        }
+        .reset-btn:hover { background: #545b62; }
+        .hidden { display: none; }
+
+        /* Custom popup modal styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .popup-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: popupAppear 0.3s ease-out;
+        }
+        @keyframes popupAppear {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .popup-message {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .popup-button {
+            background: #ff7f50;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .popup-button:hover {
+            background: #ff6347;
+        }        .leaderboard-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+        .leaderboard-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .leaderboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .board {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .board-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .player-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+        }
+        .player-entry.positive {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .player-entry.negative {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .player-name { font-weight: 500; }
+        .player-score { font-weight: 700; color: #007bff; }
+        .player-score.positive { color: #28a745; }
+        .player-score.negative { color: #dc3545; }
+        .no-data {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 20px;
+        }
+        .show-leaderboard-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin: 10px;
+        }
+        .show-leaderboard-btn:hover { background: #138496; }
+    </style>
+</head>
 <body>
-<h1>🎯 Whose Job Is It Anyways</h1>
-<div id="task">Loading...</div>
-<div id="buttons"></div>
-<script>
-console.log("Script loading...");
-const teams = [
-  {name: 'Laura', tasks: ['office supplies', 'snacks and drinks']},
-  {name: 'Deena', tasks: ['visas', 'benefits']},
-  {name: 'Christina', tasks: ['onboarding', 'team events']}
-];
-let tasks = [];
-teams.forEach(t => t.tasks.forEach(task => tasks.push({task, owner: t.name})));
-let current = tasks[Math.floor(Math.random() * tasks.length)];
-document.getElementById('task').textContent = `Who owns: "${current.task}"?`;
-document.getElementById('buttons').innerHTML = teams.map(t => 
-  `<button onclick="guess('${t.name}')">${t.name}</button>`
-).join('');
-function guess(name) {
-  alert(name === current.owner ? 'Correct!' : 'Wrong!');
-  current = tasks[Math.floor(Math.random() * tasks.length)];
-  document.getElementById('task').textContent = `Who owns: "${current.task}"?`;
-}
-</script>
+    <div class="container">
+        <h1>🎯 Whose Job Is It Anyways</h1>
+        <div id="gameArea" class="game-area">
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number" id="score">0</div>
+                    <div class="stat-label">Correct</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="attempts">0</div>
+                    <div class="stat-label">Attempts</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="streak">0</div>
+                    <div class="stat-label">Streak</div>
+                </div>
+            </div>
+            <div class="task-display" id="currentTask">
+                Loading game...
+            </div>
+            <div id="feedback" class="feedback hidden"></div>
+            <div class="team-members" id="teamMembers"></div>
+            <button class="reset-btn" onclick="setPlayerName()">Add Your Name to the Leaderboard</button>
+            <button class="reset-btn" onclick="resetGame()">Reset Game</button>
+            <button class="show-leaderboard-btn" onclick="toggleLeaderboard()">🏆 Show Leaderboards</button>
+        </div>
+        <div id="leaderboardSection" class="leaderboard-section hidden">
+            <h2 class="leaderboard-title">🏆 Whose Job Is It Anyways Leaderboards</h2>
+            <div class="leaderboard-grid">
+                <div class="board">
+                    <h3 class="board-title positive">🥇 Champions</h3>
+                    <p style="text-align: center; color: #28a745; font-style: italic; margin: 10px 0; font-size: 0.9em;">great work, you really know your Ops team</p>
+                    <div id="championsList">
+                        <div class="no-data">No champions yet. Start playing Whose Job Is It Anyways to see who knows the team best!</div>
+                    </div>
+                </div>
+                <div class="board">
+                    <h3 class="board-title negative">😅 Needs Improvement</h3>
+                    <p style="text-align: center; color: #dc3545; font-style: italic; margin: 10px 0; font-size: 0.9em;">maybe you should take the Ops team out to lunch</p>
+                    <div id="shameList">
+                        <div class="no-data">No shame board entries yet. Keep playing Whose Job Is It Anyways!</div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="show-leaderboard-btn" onclick="toggleLeaderboard()">Hide Leaderboards</button>
+                <button class="reset-btn" onclick="resetLeaderboards()">Reset All Scores</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        console.log("SCRIPT IS LOADING - TEST MESSAGE");        // Owner-defined team and tasks
+        window.sampleData = [
+            {
+                name: 'Laura',
+                avatar: 'avatars/laura.png',
+                tasks: [
+                    'office supplies',
+                    'snacks and drinks',
+                    'office vendor management',
+                    'internet troubleshooting and basic IT',
+                    'Alta Open management',
+                    'property manager liaison'
+                ]
+            },
+            {
+                name: 'Deena',
+                avatar: 'avatars/deena.png',
+                tasks: [
+                    'visas',
+                    'benefits',
+                    'leave',
+                    'HR business partnership',
+                    'employee disputes',
+                    'review cycles',
+                    'sweet treat drawer',
+                    'calibrations',
+                    'laptop ordering'                ]
+            },
+            {
+                name: 'Christina',
+                avatar: 'avatars/christina.png',
+                tasks: [
+                    'onboarding',
+                    'team events',
+                    'swag store',
+                    'company culture and engagement',
+                    'Vollues prizes',
+                    'Demo Weeks',
+                    'employee appreciation gifts'                ]
+            }
+        ];
+        let teamData = [];
+        let allTasks = [];
+        let currentTask = '';
+        let currentOwner = '';
+        let score = 0;
+        let attempts = 0;
+        let streak = 0;
+        let usedTasks = [];
+        let playerScores = JSON.parse(localStorage.getItem('taskGameScores')) || {};
+        let currentPlayer = '';
+
+        // Custom popup function to replace browser alerts
+        function showCustomPopup(message) {
+            const overlay = document.createElement('div');
+            overlay.className = 'popup-overlay';
+            overlay.innerHTML = `
+                <div class="popup-content">
+                    <div class="popup-message">${message}</div>
+                    <button class="popup-button" onclick="this.parentElement.parentElement.remove()">OK</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+        
+        // Custom input popup to replace browser prompt
+        function showCustomPrompt(message, callback) {
+            const overlay = document.createElement('div');
+            overlay.className = 'popup-overlay';
+            overlay.innerHTML = `
+                <div class="popup-content">
+                    <div class="popup-message">${message}</div>
+                    <input type="text" id="promptInput" style="width: 100%; padding: 10px; margin: 10px 0; border: 2px solid #ffb347; border-radius: 5px; font-size: 1em;" placeholder="Enter your name">
+                    <div style="margin-top: 15px;">
+                        <button class="popup-button" onclick="submitPrompt()">OK</button>
+                        <button class="popup-button" style="background: #6c757d; margin-left: 10px;" onclick="cancelPrompt()">Cancel</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            
+            // Focus on input
+            setTimeout(() => {
+                document.getElementById('promptInput').focus();
+            }, 100);
+            
+            // Handle Enter key
+            document.getElementById('promptInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    submitPrompt();
+                }
+            });
+            
+            window.submitPrompt = function() {
+                const input = document.getElementById('promptInput').value;
+                overlay.remove();
+                callback(input);
+            };
+            
+            window.cancelPrompt = function() {
+                overlay.remove();
+                callback(null);
+            };
+            const sampleData = window.sampleData;
+            teamData = [];
+            sampleData.forEach(member => {
+                teamData.push({
+                    name: member.name,
+                    tasks: member.tasks,
+                    avatar: member.avatar
+                });
+            });
+            // Flatten all tasks for the game
+            allTasks = [];
+            teamData.forEach(member => {
+                member.tasks.forEach(task => {
+                    allTasks.push({
+                        task: task,
+                        owner: member.name
+                    });
+                });
+            });
+            // Set default player and start game
+            currentPlayer = 'Anonymous Player';
+            console.log("About to call startNewRound");            startNewRound();        }
+        function checkGuess(guessedName) {
+            attempts++;
+            document.getElementById('attempts').textContent = attempts;
+            const buttons = document.querySelectorAll('.member-btn');
+            buttons.forEach(btn => btn.disabled = true);
+            if (guessedName === currentOwner) {
+                score++;
+                streak++;
+                document.getElementById('score').textContent = score;
+                document.getElementById('streak').textContent = streak;
+                const correctButton = Array.from(buttons).find(btn => btn.textContent === guessedName);
+                correctButton.classList.add('correct');
+                const feedback = document.getElementById('feedback');
+                feedback.textContent = `✅ Correct! ${guessedName} owns "${currentTask}"`;
+                feedback.className = 'feedback correct';
+                feedback.classList.remove('hidden');
+                setTimeout(() => {
+                    if (usedTasks.length >= allTasks.length) {
+                        savePlayerScore();
+                        showCustomPopup(`🎉 Game completed! Final score: ${score} correct out of ${attempts} attempts. Your score has been saved to the leaderboard!`);
+                        resetGame();
+                    } else {
+                        startNewRound();
+                    }
+                }, 2000);
+            } else {
+                streak = 0;
+                document.getElementById('streak').textContent = streak;
+                const incorrectButton = Array.from(buttons).find(btn => btn.textContent === guessedName);
+                incorrectButton.classList.add('incorrect');
+                const feedback = document.getElementById('feedback');
+                feedback.textContent = `🔪 Wrong! Try again. Who owns "${currentTask}"?`;
+                feedback.className = 'feedback incorrect';
+                feedback.classList.remove('hidden');
+                // Special popups for each member
+                if (guessedName === 'Laura' && currentOwner !== 'Laura') {
+                    setTimeout(() => { showCustomPopup("Did you just guess Laura because she's closest to you right now?"); }, 100);
+                }
+                if (guessedName === 'Deena' && currentOwner !== 'Deena') {
+                    setTimeout(() => { showCustomPopup("how am I supposed to live, laugh, love in these conditions?"); }, 100);
+                }
+                if (guessedName === 'Christina' && currentOwner !== 'Christina') {
+                    setTimeout(() => { showCustomPopup("you're killin me, smalls"); }, 100);
+                }
+                setTimeout(() => {
+                    buttons.forEach(btn => {
+                        btn.disabled = false;
+                        btn.classList.remove('incorrect');
+                    });
+                    document.getElementById('feedback').classList.add('hidden');
+                }, 1500);
+            }
+        }
+        function resetGame() {
+            savePlayerScore();
+            score = 0;
+            attempts = 0;
+            streak = 0;
+            usedTasks = [];
+            document.getElementById('score').textContent = score;
+            document.getElementById('attempts').textContent = attempts;
+            document.getElementById('streak').textContent = streak;
+            startNewRound();
+        }
+        function toggleLeaderboard() {
+            const leaderboardSection = document.getElementById('leaderboardSection');
+            if (leaderboardSection.classList.contains('hidden')) {
+                leaderboardSection.classList.remove('hidden');
+                updateLeaderboards();
+            } else {
+                leaderboardSection.classList.add('hidden');
+            }
+        }
+        function updateLeaderboards() {
+            updateChampionsList();
+            updateShameList();
+        }
+        function updateChampionsList() {
+            const championsList = document.getElementById('championsList');
+            const sortedPlayers = Object.entries(playerScores)
+                .filter(([name, data]) => data.correct > 0)
+                .sort((a, b) => {
+                    const aAccuracy = a[1].correct / a[1].attempts;
+                    const bAccuracy = b[1].correct / b[1].attempts;
+                    if (aAccuracy !== bAccuracy) return bAccuracy - aAccuracy;
+                    return b[1].correct - a[1].correct;
+                })
+                .slice(0, 5);
+            if (sortedPlayers.length === 0) {
+                championsList.innerHTML = '<div class="no-data">No champions yet. Start playing Whose Job Is It Anyways to see who knows the team best!</div>';
+                return;
+            }
+            championsList.innerHTML = '';
+            sortedPlayers.forEach(([name, data], index) => {
+                const accuracy = ((data.correct / data.attempts) * 100).toFixed(1);
+                const entry = document.createElement('div');
+                entry.className = 'player-entry positive';
+                entry.innerHTML = `
+                    <img src="${getAvatarByName(name)}" alt="${name}" style="width:28px;height:28px;border-radius:50%;vertical-align:middle;margin-right:8px;object-fit:cover;">
+                    <div class="player-name" style="flex:1;">${index + 1}. ${name}</div>
+                    <div class="player-score positive">${data.correct}/${data.attempts} (${accuracy}%)</div>
+                `;
+                championsList.appendChild(entry);
+            });
+        }
+        function updateShameList() {
+            const shameList = document.getElementById('shameList');
+            const sortedPlayers = Object.entries(playerScores)
+                .filter(([name, data]) => data.attempts >= 5)
+                .sort((a, b) => {
+                    const aAccuracy = a[1].correct / a[1].attempts;
+                    const bAccuracy = b[1].correct / b[1].attempts;
+                    if (aAccuracy !== bAccuracy) return aAccuracy - bAccuracy;
+                    return a[1].attempts - b[1].attempts;
+                })
+                .slice(0, 5);
+            if (sortedPlayers.length === 0) {
+                shameList.innerHTML = '<div class="no-data">No shame board entries yet. Keep playing Whose Job Is It Anyways!</div>';
+                return;
+            }
+            shameList.innerHTML = '';
+            sortedPlayers.forEach(([name, data], index) => {
+                const accuracy = ((data.correct / data.attempts) * 100).toFixed(1);
+                const entry = document.createElement('div');
+                entry.className = 'player-entry negative';
+                entry.innerHTML = `
+                    <img src="${getAvatarByName(name)}" alt="${name}" style="width:28px;height:28px;border-radius:50%;vertical-align:middle;margin-right:8px;object-fit:cover;">
+                    <div class="player-name" style="flex:1;">${index + 1}. ${name}</div>
+                    <div class="player-score negative">${data.correct}/${data.attempts} (${accuracy}%)</div>
+                `;
+                shameList.appendChild(entry);
+            });
+        }
+        function savePlayerScore() {
+            if (!currentPlayer || attempts === 0) return;
+            if (!playerScores[currentPlayer]) {
+                playerScores[currentPlayer] = { correct: 0, attempts: 0 };
+            }
+            playerScores[currentPlayer].correct += score;
+            playerScores[currentPlayer].attempts += attempts;
+            localStorage.setItem('taskGameScores', JSON.stringify(playerScores));
+        }
+        function resetLeaderboards() {
+            if (confirm('Are you sure you want to reset all player scores? This cannot be undone.')) {
+                playerScores = {};
+                localStorage.removeItem('taskGameScores');
+                updateLeaderboards();
+            }
+        }
+        function setPlayerName() {
+            showCustomPrompt('Enter your name for the leaderboard:', (playerName) => {
+                if (playerName && playerName.trim()) {
+                    currentPlayer = playerName.trim();
+                    showCustomPopup('Name updated to: '+currentPlayer);
+                } else {
+                    showCustomPopup('Name not changed.');
+                }
+            });
+        }
+        // On page load, start the game with owner-defined data
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSampleData();
+        });
+    </script>
 </body>
-</html>
+</html> 
