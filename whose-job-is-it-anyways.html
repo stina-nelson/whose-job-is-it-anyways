@@ -379,7 +379,9 @@
         let streak = 0;
         let currentPlayer = 'Anonymous Player';
         let playerScores = JSON.parse(localStorage.getItem('taskGameScores')) || {};
-
+        let currentRound = 1;
+        let questionsInRound = 0;
+        const QUESTIONS_PER_ROUND = 10;
         function initGame() {
             allTasks = [];
             teamData.forEach(member => {
@@ -390,10 +392,45 @@
                     });
                 });
             });
-            startNewRound();
+            startNewGame();
         }
 
         function startNewRound() {
+            // Check if round is complete
+            if (questionsInRound >= QUESTIONS_PER_ROUND) {
+                endRound();
+                return;
+            }
+        function endRound() {
+            const accuracy = attempts > 0 ? Math.round((score / attempts) * 100) : 0;
+            showCustomConfirm(`Round ${currentRound} Complete!
+
+Your Score: ${score}/${attempts} (${accuracy}%)
+
+Play another round?`, (playAgain) => {
+                if (playAgain) {
+                    startNewGame();
+                } else {
+                    document.getElementById('currentTask').textContent = `Game Over! Final Score: ${score}/${attempts} (${accuracy}%)`;
+                    document.getElementById('teamMembers').innerHTML = '<button class="reset-btn" onclick="startNewGame()">Start New Game</button>';
+                }
+            });
+        }
+        
+        function startNewGame() {
+            currentRound++;
+            questionsInRound = 0;
+            usedTasks = [];
+            score = 0;
+            attempts = 0;
+            streak = 0;
+            document.getElementById('score').textContent = score;
+            document.getElementById('attempts').textContent = attempts;
+            document.getElementById('streak').textContent = streak;
+            startNewGame();
+        }
+            
+            // Reset task pool if empty
             if (usedTasks.length >= allTasks.length) usedTasks = [];
             
             let availableTasks = allTasks.filter(taskObj => !usedTasks.includes(taskObj.task));
@@ -401,7 +438,9 @@
             currentTask = currentTaskObj.task;
             
             usedTasks.push(currentTask);
-            document.getElementById('currentTask').textContent = `Who owns: "${currentTask}"?`;
+            questionsInRound++;
+            
+            document.getElementById('currentTask').textContent = `Who owns: "${currentTask}"? (Question ${questionsInRound}/${QUESTIONS_PER_ROUND})`;
             document.getElementById('feedback').classList.add('hidden');
             
             displayTeamMembers();
@@ -479,7 +518,7 @@
                     document.getElementById('score').textContent = score;
                     document.getElementById('attempts').textContent = attempts;
                     document.getElementById('streak').textContent = streak;
-                    startNewRound();
+                    startNewGame();
                 }
             });
         }
@@ -659,7 +698,9 @@
             }
         }, 10000);
 
-        document.addEventListener('DOMContentLoaded', initGame);
+            });
+            startNewGame();
+        }        document.addEventListener('DOMContentLoaded', initGame);
     </script>
 </body>
 </html>
