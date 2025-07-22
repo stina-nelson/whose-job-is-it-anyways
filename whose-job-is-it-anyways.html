@@ -449,6 +449,12 @@
                 
                 feedback.textContent = `✅ Correct! ${guess} owns "${currentTask}"`;
                 feedback.className = 'feedback correct';
+            } else {
+                streak = 0;
+                document.getElementById('streak').textContent = streak;
+                
+                feedback.textContent = `❌ Wrong! ${currentTaskObj.owner} owns "${currentTask}"`;
+                feedback.className = 'feedback incorrect';
                 
                 setTimeout(() => {
                     if (guess === 'Laura') {
@@ -459,12 +465,6 @@
                         showCustomPopup("you're killin me, smalls");
                     }
                 }, 1000);
-            } else {
-                streak = 0;
-                document.getElementById('streak').textContent = streak;
-                
-                feedback.textContent = `❌ Wrong! ${currentTaskObj.owner} owns "${currentTask}"`;
-                feedback.className = 'feedback incorrect';
             }
             
             setTimeout(startNewRound, 3000);
