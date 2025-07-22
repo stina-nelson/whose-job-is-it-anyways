@@ -411,87 +411,7 @@ Play another round?`, (playAgain) => {
                 if (playAgain) {
                     startNewGame();
                 } else {
-                    document.getElementById('currentTask').textContent = `Game Over! Final Score: ${score}/${attempts} (${accuracy}%)`;
-                    document.getElementById('teamMembers').innerHTML = '<button class="reset-btn" onclick="startNewGame()">Start New Game</button>';
-                }
-            });
-        }
-        
-        function startNewGame() {
-            currentRound++;
-            questionsInRound = 0;
-            usedTasks = [];
-            score = 0;
-            attempts = 0;
-            streak = 0;
-            document.getElementById('score').textContent = score;
-            document.getElementById('attempts').textContent = attempts;
-            document.getElementById('streak').textContent = streak;
-            startNewGame();
-        }
-            
-            // Reset task pool if empty
-            if (usedTasks.length >= allTasks.length) usedTasks = [];
-            
-            let availableTasks = allTasks.filter(taskObj => !usedTasks.includes(taskObj.task));
-            currentTaskObj = availableTasks[Math.floor(Math.random() * availableTasks.length)];
-            currentTask = currentTaskObj.task;
-            
-            usedTasks.push(currentTask);
-            questionsInRound++;
-            
-            document.getElementById('currentTask').textContent = `Who owns: "${currentTask}"? (Question ${questionsInRound}/${QUESTIONS_PER_ROUND})`;
-            document.getElementById('feedback').classList.add('hidden');
-            
-            displayTeamMembers();
-        }
-
-        function displayTeamMembers() {
-            const container = document.getElementById('teamMembers');
-            container.innerHTML = '';
-            
-            teamData.forEach(member => {
-                const button = document.createElement('button');
-                button.className = 'member-btn';
-                button.onclick = () => checkAnswer(member.name);
-                
-                const avatar = document.createElement('img');
-                avatar.src = member.avatar;
-                avatar.alt = member.name;
-                avatar.className = 'member-avatar';
-                avatar.onerror = () => {
-                    avatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=ffb347&color=ff7f50&size=70`;
-                };
-                
-                const name = document.createElement('div');
-                name.textContent = member.name;
-                
-                button.appendChild(avatar);
-                button.appendChild(name);
-                container.appendChild(button);
-            });
-        }
-
-        function checkAnswer(guess) {
-            attempts++;
-            document.getElementById('attempts').textContent = attempts;
-            
-            const feedback = document.getElementById('feedback');
-            feedback.classList.remove('hidden');
-            
-            if (guess === currentTaskObj.owner) {
-                score++;
-                streak++;
-                document.getElementById('score').textContent = score;
-                document.getElementById('streak').textContent = streak;
-                
-                feedback.textContent = `✅ Correct! ${guess} owns "${currentTask}"`;
-                feedback.className = 'feedback correct';
-            } else {
-                streak = 0;
-                document.getElementById('streak').textContent = streak;
-                
-                feedback.textContent = `❌ Wrong! ${currentTaskObj.owner} owns "${currentTask}"`;
+                feedback.textContent = `❌ Try again!`;
                 feedback.className = 'feedback incorrect';
                 
                 setTimeout(() => {
@@ -503,9 +423,10 @@ Play another round?`, (playAgain) => {
                         showCustomPopup("you're killin me, smalls");
                     }
                 }, 1000);
+                
+                // Don't advance - let them guess again
+                return;
             }
-            
-            setTimeout(startNewRound, 3000);
         }
 
         function resetGame() {
