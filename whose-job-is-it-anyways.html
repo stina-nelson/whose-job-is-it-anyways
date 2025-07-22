@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whose Job Is It Anyways</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #ffe259 0%, #ffa751 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            color: #ff7f50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        .task-display {
+            background: #fff7c0;
+            border: 2px solid #ffb347;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            font-size: 1.2em;
+            color: #495057;
+            font-weight: 500;
+        }
+        .team-members {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+        .member-btn {
+            background: #fff7c0;
+            color: #ff7f50;
+            border: 2px solid #ffb347;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .member-btn:hover {
+            background: #ffe259;
+            color: #ffb347;
+            transform: scale(1.07) rotate(-2deg);
+            box-shadow: 0 8px 24px rgba(255, 200, 80, 0.22);
+        }
+        .feedback {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 1.1em;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 25px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        .stat { text-align: center; }
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #007bff;
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        .reset-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin: 10px 5px;
+        }
+        .reset-btn:hover { background: #545b62; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Whose Job Is It Anyways</h1>
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number" id="score">0</div>
+                <div class="stat-label">Correct</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="attempts">0</div>
+                <div class="stat-label">Attempts</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="streak">0</div>
+                <div class="stat-label">Streak</div>
+            </div>
+        </div>
+        <div class="task-display" id="currentTask">Loading game...</div>
+        <div id="feedback" class="feedback" style="display: none;"></div>
+        <div class="team-members" id="teamMembers"></div>
+        <button class="reset-btn" onclick="nextRound()">Next Question</button>
+        <button class="reset-btn" onclick="resetStats()">Reset Game</button>
+    </div>
+
+    <script>
+        console.log("Game script starting...");
+        
+        const tasks = [
+            {task: 'office supplies', owner: 'Laura'},
+            {task: 'snacks and drinks', owner: 'Laura'},
+            {task: 'office vendor management', owner: 'Laura'},
+            {task: 'internet troubleshooting and basic IT', owner: 'Laura'},
+            {task: 'Alta Open management', owner: 'Laura'},
+            {task: 'property manager liaison', owner: 'Laura'},
+            {task: 'visas', owner: 'Deena'},
+            {task: 'benefits', owner: 'Deena'},
+            {task: 'leave', owner: 'Deena'},
+            {task: 'HR business partnership', owner: 'Deena'},
+            {task: 'employee disputes', owner: 'Deena'},
+            {task: 'review cycles', owner: 'Deena'},
+            {task: 'sweet treat drawer', owner: 'Deena'},
+            {task: 'calibrations', owner: 'Deena'},
+            {task: 'laptop ordering', owner: 'Deena'},
+            {task: 'onboarding', owner: 'Christina'},
+            {task: 'team events', owner: 'Christina'},
+            {task: 'swag store', owner: 'Christina'},
+            {task: 'company culture and engagement', owner: 'Christina'},
+            {task: 'Vollues prizes', owner: 'Christina'},
+            {task: 'Demo Weeks', owner: 'Christina'},
+            {task: 'employee appreciation gifts', owner: 'Christina'}
+        ];
+        
+        const members = ['Laura', 'Deena', 'Christina'];
+        let currentTask = null;
+        let score = 0;
+        let attempts = 0;
+        let streak = 0;
+        
+        function startGame() {
+            console.log("Starting game...");
+            nextRound();
+        }
+        
+        function nextRound() {
+            console.log("Next round...");
+            currentTask = tasks[Math.floor(Math.random() * tasks.length)];
+            document.getElementById('currentTask').textContent = `Who owns: "${currentTask.task}"?`;
+            document.getElementById('feedback').style.display = 'none';
+            
+            const container = document.getElementById('teamMembers');
+            container.innerHTML = '';
+            
+            members.forEach(member => {
+                const button = document.createElement('button');
+                button.className = 'member-btn';
+                button.textContent = member;
+                button.onclick = () => checkAnswer(member);
+                container.appendChild(button);
+            });
+        }
+        
+        function checkAnswer(guess) {
+            attempts++;
+            document.getElementById('attempts').textContent = attempts;
+            
+            const feedback = document.getElementById('feedback');
+            if (guess === currentTask.owner) {
+                score++;
+                streak++;
+                document.getElementById('score').textContent = score;
+                document.getElementById('streak').textContent = streak;
+                feedback.textContent = `✅ Correct! ${guess} owns "${currentTask.task}"`;
+                feedback.style.background = '#d4edda';
+                feedback.style.color = '#155724';
+                
+                if (guess === 'Laura') {
+                    setTimeout(() => alert("Did you just guess Laura because she's closest to you right now?"), 500);
+                } else if (guess === 'Deena') {
+                    setTimeout(() => alert("how am I supposed to live, laugh, love in these conditions?"), 500);
+                } else if (guess === 'Christina') {
+                    setTimeout(() => alert("you're killin me, smalls"), 500);
+                }
+            } else {
+                streak = 0;
+                document.getElementById('streak').textContent = streak;
+                feedback.textContent = `❌ Wrong! ${currentTask.owner} owns "${currentTask.task}"`;
+                feedback.style.background = '#f8d7da';
+                feedback.style.color = '#721c24';
+            }
+            
+            feedback.style.display = 'block';
+            setTimeout(nextRound, 2000);
+        }
+        
+        function resetStats() {
+            score = 0;
+            attempts = 0;
+            streak = 0;
+            document.getElementById('score').textContent = score;
+            document.getElementById('attempts').textContent = attempts;
+            document.getElementById('streak').textContent = streak;
+            nextRound();
+        }
+        
+        console.log("DOM loaded, starting game...");
+        startGame();
+    </script>
+</body>
+</html>
