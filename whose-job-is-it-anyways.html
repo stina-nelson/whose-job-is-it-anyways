@@ -357,36 +357,8 @@
         }
 
         // Start the game when page loads
-        function setPlayerName() {
-            showCustomPrompt("Enter your name for the leaderboard:", (playerName) => {
-                if (playerName && playerName.trim()) {
-                    currentPlayer = playerName.trim();
-                    showCustomPopup("Name updated to: " + currentPlayer);
-                    saveScore();
-                } else {
-                    showCustomPopup("Name not changed.");
-                }
-            });
-        }
 
-        function toggleLeaderboard() {
-            const section = document.getElementById("leaderboardSection");
-            const btn = document.querySelector(".show-leaderboard-btn") || document.querySelector("button[onclick*=toggleLeaderboard]");
-            
-            if (section.classList.contains("hidden")) {
-                section.classList.remove("hidden");
-                btn.textContent = "🎯 Hide Leaderboards";
-                updateLeaderboards();
-            } else {
-                section.classList.add("hidden");
-                btn.textContent = "🏆 Show Leaderboards";
-            }
-        }
 
-        function updateLeaderboards() {
-            updateChampionsList();
-            updateShameList();
-        }
 
         function updateChampionsList() {
             const list = document.getElementById("championsList");
