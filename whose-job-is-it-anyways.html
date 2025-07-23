@@ -589,8 +589,20 @@
             });
         }
         // On page load, start the game with owner-defined data
+        function initGame() {
+            allTasks = [];
+            teamData.forEach(member => {
+                member.tasks.forEach(task => {
+                    allTasks.push({
+                        task: task,
+                        owner: member.name
+                    });
+                });
+            });
+            startNewGame();
+        }
         document.addEventListener('DOMContentLoaded', function() {
-            loadSampleData();
+            initGame();
         });
     </script>
 </body>
