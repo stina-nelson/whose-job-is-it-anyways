@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whose Job Is It Anyways</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Baloo 2', 'Nunito', 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #ffe259 0%, #ffa751 100%);
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 
+                0 25px 50px rgba(255, 165, 0, 0.3),
+                0 15px 35px rgba(255, 200, 80, 0.2);
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        h1 {
+            color: #ff7f50;
+            margin-bottom: 30px;
+            font-size: 2.8em;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(255, 127, 80, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+        .task-display {
+            background: linear-gradient(145deg, #fff7c0, #ffe259);
+            border: 3px solid #ffb347;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 25px 0;
+            font-size: 1.3em;
+            color: #495057;
+            font-weight: 600;
+            box-shadow: 0 8px 16px rgba(255, 179, 71, 0.3);
+        }
+        .team-members {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .member-btn {
+            background: linear-gradient(145deg, #fff7c0, #ffe259);
+            color: #ff7f50;
+            border: 3px solid #ffb347;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        .member-btn:hover {
+            background: linear-gradient(145deg, #ffe259, #ffa751);
+            color: white;
+            transform: scale(1.08) rotate(-2deg);
+            box-shadow: 0 12px 30px rgba(255, 200, 80, 0.4);
+        }
+        .member-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #ffb347;
+            transition: all 0.3s ease;
+        }
+        .member-btn:hover .member-avatar {
+            border-color: white;
+            transform: scale(1.1);
+        }
+        .feedback {
+            margin: 25px 0;
+            padding: 20px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 1.2em;
+        }
+        .feedback.correct {
+            background: linear-gradient(145deg, #d4edda, #b8e6c1);
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        .feedback.incorrect {
+            background: linear-gradient(145deg, #f8d7da, #f1b5bb);
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            padding: 25px;
+            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+            border-radius: 20px;
+        }
+        .stat { text-align: center; }
+        .stat-number {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #007bff;
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+        .reset-btn {
+            background: linear-gradient(145deg, #6c757d, #545b62);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 8px;
+            font-weight: 600;
+        }
+        .reset-btn:hover { 
+            background: linear-gradient(145deg, #545b62, #495057);
+            transform: translateY(-2px);
+        }
+        .hidden { display: none; }
+        
+        /* Custom popup styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .popup-content {
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+        }
+        .popup-message {
+            font-size: 1.2em;
+            margin-bottom: 25px;
+            color: #495057;
+            font-weight: 500;
+        }
+        .popup-button {
+            background: linear-gradient(145deg, #ff7f50, #ff6347);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin: 8px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        .popup-button:hover {
+            background: linear-gradient(145deg, #ff6347, #e55347);
+            transform: translateY(-2px);
+        }
+        .popup-button.secondary {
+            background: linear-gradient(145deg, #6c757d, #545b62);
+        }
+        .popup-input {
+            width: 100%;
+            padding: 15px;
+            border: 3px solid #ffb347;
+            border-radius: 12px;
+            font-size: 1.1em;
+            margin: 15px 0;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        .popup-input:focus {
+            outline: none;
+            border-color: #ff7f50;
+        }
+        
+        /* Leaderboard styles */
+        .leaderboard-section {
+            margin: 30px 0;
+        }
+        .leaderboard {
+            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .board-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+            font-weight: 700;
+        }
+        .board-title.positive { color: #28a745; }
+        .board-title.negative { color: #dc3545; }
+        .board-subtitle {
+            text-align: center;
+            font-style: italic;
+            margin: 10px 0 20px 0;
+            font-size: 0.95em;
+            opacity: 0.8;
+        }
+        .player-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 12px;
+            background: white;
+            border-left: 5px solid #007bff;
+        }
+        .player-entry.positive {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .player-entry.negative {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .player-name { font-weight: 600; }
+        .player-score { font-weight: 700; color: #007bff; }
+        .player-score.positive { color: #28a745; }
+        .player-score.negative { color: #dc3545; }
+        .no-data {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 30px;
+        }
+        .show-leaderboard-btn {
+            background: linear-gradient(145deg, #17a2b8, #138496);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+            font-weight: 600;
+        }
+        .show-leaderboard-btn:hover { 
+            background: linear-gradient(145deg, #138496, #117a83);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Whose Job Is It Anyways</h1>
+        <div id="gameArea" class="game-area">
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number" id="score">0</div>
+                    <div class="stat-label">Correct</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="attempts">0</div>
+                    <div class="stat-label">Attempts</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="streak">0</div>
+                    <div class="stat-label">Streak</div>
+                </div>
+            </div>
+            <div class="task-display" id="currentTask">Loading game...</div>
+            <div id="feedback" class="feedback hidden"></div>
+            <div class="team-members" id="teamMembers"></div>
+            <button class="reset-btn" onclick="setPlayerName()">Add Your Name to the Leaderboard</button>
+            <button class="reset-btn" onclick="resetGame()">Reset Game</button>
+            <button class="show-leaderboard-btn" onclick="toggleLeaderboard()">🏆 Show Leaderboards</button>
+        </div>
+        <div id="leaderboardSection" class="leaderboard-section hidden">
+            <div class="leaderboard">
+                <h3 class="board-title positive">🥇 Champions</h3>
+                <p class="board-subtitle" style="color: #28a745;">great work, you really know your Ops team</p>
+                <div id="championsList">
+                    <div class="no-data">No champions yet! Score 80% or better to make the list.</div>
+                </div>
+            </div>
+            <div class="leaderboard">
+                <h3 class="board-title negative">😅 Needs Improvement</h3>
+                <p class="board-subtitle" style="color: #dc3545;">maybe you should take the Ops team out to lunch</p>
+                <div id="shameList">
+                    <div class="no-data">Everyone's doing great! (Score under 60% to appear here)</div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="reset-btn" onclick="resetLeaderboards()">Reset All Scores</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const teamData = [
+            {
+                name: 'Laura',
+                avatar: 'avatars/laura.png',
+                tasks: [
+                    'office supplies',
+                    'snacks and drinks', 
+                    'office vendor management',
+                    'internet troubleshooting and basic IT',
+                    'Alta Open management',
+                    'property manager liaison'
+                ]
+            },
+            {
+                name: 'Deena',
+                avatar: 'avatars/deena.png',
+                tasks: [
+                    'visas',
+                    'benefits',
+                    'leave',
+                    'HR business partnership',
+                    'employee disputes',
+                    'review cycles',
+                    'sweet treat drawer',
+                    'calibrations',
+                    'laptop ordering'
+                ]
+            },
+            {
+                name: 'Christina',
+                avatar: 'avatars/christina.png',
+                tasks: [
+                    'onboarding',
+                    'team events',
+                    'swag store',
+                    'company culture and engagement',
+                    'Vollues prizes',
+                    'Demo Weeks',
+                    'employee appreciation gifts'
+                ]
+            }
+        ];
+
+        let allTasks = [];
+        let currentTask = '';
+        let currentTaskObj = null;
+        let usedTasks = [];
+        let score = 0;
+        let attempts = 0;
+        let streak = 0;
+        let currentPlayer = 'Anonymous Player';
+        let playerScores = JSON.parse(localStorage.getItem('taskGameScores')) || {};
+
+        function initGame() {
+            allTasks = [];
+            teamData.forEach(member => {
+                member.tasks.forEach(task => {
+                    allTasks.push({
+                        task: task,
+                        owner: member.name
+                    });
+                });
+            });
+            startNewRound();
+        }
+
+        function startNewRound() {
+            if (usedTasks.length >= allTasks.length) usedTasks = [];
+            
+            let availableTasks = allTasks.filter(taskObj => !usedTasks.includes(taskObj.task));
+            currentTaskObj = availableTasks[Math.floor(Math.random() * availableTasks.length)];
+            currentTask = currentTaskObj.task;
+            
+            usedTasks.push(currentTask);
+            document.getElementById('currentTask').textContent = `Who owns: "${currentTask}"?`;
+            document.getElementById('feedback').classList.add('hidden');
+            
+            displayTeamMembers();
+        }
+
+        function displayTeamMembers() {
+            const container = document.getElementById('teamMembers');
+            container.innerHTML = '';
+            
+            teamData.forEach(member => {
+                const button = document.createElement('button');
+                button.className = 'member-btn';
+                button.onclick = () => checkAnswer(member.name);
+                
+                const avatar = document.createElement('img');
+                avatar.src = member.avatar;
+                avatar.alt = member.name;
+                avatar.className = 'member-avatar';
+                avatar.onerror = () => {
+                    avatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=ffb347&color=ff7f50&size=70`;
+                };
+                
+                const name = document.createElement('div');
+                name.textContent = member.name;
+                
+                button.appendChild(avatar);
+                button.appendChild(name);
+                container.appendChild(button);
+            });
+        }
+
+        function checkAnswer(guess) {
+            attempts++;
+            document.getElementById('attempts').textContent = attempts;
+            
+            const feedback = document.getElementById('feedback');
+            feedback.classList.remove('hidden');
+            
+            if (guess === currentTaskObj.owner) {
+                score++;
+                streak++;
+                document.getElementById('score').textContent = score;
+                document.getElementById('streak').textContent = streak;
+                
+                feedback.textContent = `✅ Correct! ${guess} owns "${currentTask}"`;
+                feedback.className = 'feedback correct';
+                
+                setTimeout(() => {
+                    if (guess === 'Laura') {
+                        showCustomPopup("Did you just guess Laura because she's closest to you right now?");
+                    } else if (guess === 'Deena') {
+                        showCustomPopup("how am I supposed to live, laugh, love in these conditions?");
+                    } else if (guess === 'Christina') {
+                        showCustomPopup("you're killin me, smalls");
+                    }
+                }, 1000);
+            } else {
+                streak = 0;
+                document.getElementById('streak').textContent = streak;
+                
+                feedback.textContent = `❌ Wrong! ${currentTaskObj.owner} owns "${currentTask}"`;
+                feedback.className = 'feedback incorrect';
+            }
+            
+            setTimeout(startNewRound, 3000);
+        }
+
+        function resetGame() {
+            showCustomConfirm('Reset your current game progress?', (confirmed) => {
+                if (confirmed) {
+                    score = 0;
+                    attempts = 0;
+                    streak = 0;
+                    usedTasks = [];
+                    document.getElementById('score').textContent = score;
+                    document.getElementById('attempts').textContent = attempts;
+                    document.getElementById('streak').textContent = streak;
+                    startNewRound();
+                }
+            });
+        }
+
+        function toggleLeaderboard() {
+            const section = document.getElementById('leaderboardSection');
+            const btn = document.querySelector('.show-leaderboard-btn');
+            
+            if (section.classList.contains('hidden')) {
+                section.classList.remove('hidden');
+                btn.textContent = '🎯 Hide Leaderboards';
+                updateLeaderboards();
+            } else {
+                section.classList.add('hidden');
+                btn.textContent = '🏆 Show Leaderboards';
+            }
+        }
+
+        function updateLeaderboards() {
+            updateChampionsList();
+            updateShameList();
+        }
+
+        function updateChampionsList() {
+            const list = document.getElementById('championsList');
+            const champions = Object.entries(playerScores)
+                .filter(([name, data]) => data.attempts >= 5 && (data.score / data.attempts) >= 0.8)
+                .sort((a, b) => (b[1].score / b[1].attempts) - (a[1].score / a[1].attempts));
+            
+            if (champions.length === 0) {
+                list.innerHTML = '<div class="no-data">No champions yet! Score 80% or better to make the list.</div>';
+            } else {
+                list.innerHTML = champions.map(([name, data]) => 
+                    `<div class="player-entry positive">
+                        <span class="player-name">${name}</span>
+                        <span class="player-score positive">${data.score}/${data.attempts} (${Math.round(data.score/data.attempts*100)}%)</span>
+                    </div>`
+                ).join('');
+            }
+        }
+
+        function updateShameList() {
+            const list = document.getElementById('shameList');
+            const shame = Object.entries(playerScores)
+                .filter(([name, data]) => data.attempts >= 5 && (data.score / data.attempts) < 0.6)
+                .sort((a, b) => (a[1].score / a[1].attempts) - (b[1].score / b[1].attempts));
+            
+            if (shame.length === 0) {
+                list.innerHTML = '<div class="no-data">Everyone\'s doing great! (Score under 60% to appear here)</div>';
+            } else {
+                list.innerHTML = shame.map(([name, data]) => 
+                    `<div class="player-entry negative">
+                        <span class="player-name">${name}</span>
+                        <span class="player-score negative">${data.score}/${data.attempts} (${Math.round(data.score/data.attempts*100)}%)</span>
+                    </div>`
+                ).join('');
+            }
+        }
+
+        function saveScore() {
+            if (attempts >= 5) {
+                playerScores[currentPlayer] = {
+                    score: score,
+                    attempts: attempts,
+                    lastPlayed: new Date().toISOString()
+                };
+                localStorage.setItem('taskGameScores', JSON.stringify(playerScores));
+                updateLeaderboards();
+            }
+        }
+
+        function resetLeaderboards() {
+            showCustomConfirm('Reset all leaderboard scores? This cannot be undone.', (confirmed) => {
+                if (confirmed) {
+                    playerScores = {};
+                    localStorage.removeItem('taskGameScores');
+                    updateLeaderboards();
+                }
+            });
+        }
+
+        function setPlayerName() {
+            showCustomPrompt('Enter your name for the leaderboard:', (playerName) => {
+                if (playerName && playerName.trim()) {
+                    currentPlayer = playerName.trim();
+                    showCustomPopup('Name updated to: ' + currentPlayer);
+                    saveScore();
+                } else {
+                    showCustomPopup('Name not changed.');
+                }
+            });
+        }
+
+        function showCustomPopup(message) {
+            const overlay = document.createElement('div');
+            overlay.className = 'popup-overlay';
+            overlay.innerHTML = `
+                <div class="popup-content">
+                    <div class="popup-message">${message}</div>
+                    <button class="popup-button" onclick="this.closest('.popup-overlay').remove()">OK</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        function showCustomPrompt(message, callback) {
+            const overlay = document.createElement('div');
+            overlay.className = 'popup-overlay';
+            overlay.innerHTML = `
+                <div class="popup-content">
+                    <div class="popup-message">${message}</div>
+                    <input type="text" class="popup-input" placeholder="Enter your name" maxlength="20">
+                    <div>
+                        <button class="popup-button" onclick="submitPrompt()">Submit</button>
+                        <button class="popup-button secondary" onclick="cancelPrompt()">Cancel</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            
+            const input = overlay.querySelector('.popup-input');
+            input.focus();
+            
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') submitPrompt();
+                if (e.key === 'Escape') cancelPrompt();
+            });
+            
+            window.submitPrompt = () => {
+                const value = input.value.trim();
+                overlay.remove();
+                callback(value);
+                delete window.submitPrompt;
+                delete window.cancelPrompt;
+            };
+            
+            window.cancelPrompt = () => {
+                overlay.remove();
+                callback(null);
+                delete window.submitPrompt;
+                delete window.cancelPrompt;
+            };
+        }
+
+        function showCustomConfirm(message, callback) {
+            const overlay = document.createElement('div');
+            overlay.className = 'popup-overlay';
+            overlay.innerHTML = `
+                <div class="popup-content">
+                    <div class="popup-message">${message}</div>
+                    <div>
+                        <button class="popup-button" onclick="confirmYes()">Yes</button>
+                        <button class="popup-button secondary" onclick="confirmNo()">No</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            
+            window.confirmYes = () => {
+                overlay.remove();
+                callback(true);
+                delete window.confirmYes;
+                delete window.confirmNo;
+            };
+            
+            window.confirmNo = () => {
+                overlay.remove();
+                callback(false);
+                delete window.confirmYes;
+                delete window.confirmNo;
+            };
+        }
+
+        setInterval(() => {
+            if (attempts > 0) {
+                saveScore();
+            }
+        }, 10000);
+
+        document.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>
