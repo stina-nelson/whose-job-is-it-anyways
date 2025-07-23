@@ -434,6 +434,84 @@
                 }
             });
         }
+        function showCustomPopup(message) {
+            const overlay = document.createElement("div");
+            overlay.className = "popup-overlay";
+            overlay.innerHTML = `
+                <div class="popup-content">
+                    <div class="popup-message">${message}</div>
+                    <button class="popup-button" onclick="this.closest(\".popup-overlay\").remove()">OK</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        function showCustomPrompt(message, callback) {
+            const overlay = document.createElement("div");
+            overlay.className = "popup-overlay";
+            overlay.innerHTML = `
+                <div class="popup-content">
+                    <div class="popup-message">${message}</div>
+                    <input type="text" class="popup-input" placeholder="Enter your name" maxlength="20">
+                    <div>
+                        <button class="popup-button" onclick="submitPrompt()">Submit</button>
+                        <button class="popup-button secondary" onclick="cancelPrompt()">Cancel</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            
+            const input = overlay.querySelector(".popup-input");
+            input.focus();
+            
+            input.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") submitPrompt();
+            });
+            
+            window.submitPrompt = () => {
+                const value = input.value.trim();
+                overlay.remove();
+                callback(value);
+                delete window.submitPrompt;
+                delete window.cancelPrompt;
+            };
+            
+            window.cancelPrompt = () => {
+                overlay.remove();
+                callback(null);
+                delete window.submitPrompt;
+                delete window.cancelPrompt;
+            };
+        }
+
+        function showCustomConfirm(message, callback) {
+            const overlay = document.createElement("div");
+            overlay.className = "popup-overlay";
+            overlay.innerHTML = `
+                <div class="popup-content">
+                    <div class="popup-message">${message}</div>
+                    <div>
+                        <button class="popup-button" onclick="confirmYes()">Yes</button>
+                        <button class="popup-button secondary" onclick="confirmNo()">No</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            
+            window.confirmYes = () => {
+                overlay.remove();
+                callback(true);
+                delete window.confirmYes;
+                delete window.confirmNo;
+            };
+            
+            window.confirmNo = () => {
+                overlay.remove();
+                callback(false);
+                delete window.confirmYes;
+                delete window.confirmNo;
+            };
+        }
         document.addEventListener('DOMContentLoaded', initGame);
     </script>
 </body>
